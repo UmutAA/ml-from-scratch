@@ -5,13 +5,18 @@ def calculate_mse(y_trues: np.ndarray, y_predicteds: np.ndarray) -> float:
     Calculates and returns mean squared errors
     """
 
-    mse_arr = np.array(y_trues - y_predicteds)
-    mse_arr **= 2.0
-    sum = 0.0
-    for i in mse_arr:
-        sum += i
+    if not isinstance(y_trues, np.ndarray):
+        y_trues = np.asarray(y_trues)
+    
+    if not isinstance(y_predicteds, np.ndarray):
+        y_predicteds = np.asarray(y_predicteds)
 
-    mse = sum / float(len(mse_arr))
+    m = y_trues.shape[0]
+    if m == 0:
+        raise ZeroDivisionError("Dimension can't be 0")
 
-    return mse
+    mse_matrix = (y_trues - y_predicteds) ** 2
+    mse = np.sum(mse_matrix) / float(m)
+
+    return float(mse)
     
