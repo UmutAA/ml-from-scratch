@@ -3,14 +3,15 @@ import numpy as np
 import matplotlib.pyplot as plt
 
 class LinearRegressionModel():
-    def __init__(self, learning_rate: float = 0.1, epochs: int = 1000):
+    def __init__(self, learning_rate: float = 0.1, epochs: int = 1000, print_rate: int = 1000):
         self.lr = learning_rate
         self.epochs = epochs
         self.loss_history = []
-        self.b = 0
+        self.b = None
         self.w = None
+        self.print_rate = print_rate
 
-    def fit(self, X: np.ndarray, y: np.ndarray):
+    def fit(self, X: np.ndarray, y: np.ndarray, tol: float = 1e-8):
 
         if not isinstance(X, np.ndarray):
             X = np.asarray(X)
@@ -18,12 +19,15 @@ class LinearRegressionModel():
         if not isinstance(y, np.ndarray):
             y = np.asarray(y)
 
+        self.b = np.mean(y)
+
         #Reshape the inputs matrix as column matrix
         if X.ndim == 1:
             X = X.reshape(-1,1)
 
         m,n = X.shape #m row n columns: m samples, n features
         self.w = np.zeros(n, dtype=float)
+        prev_loss = None
 
         #Training loop
         for epoch in range(self.epochs):
@@ -45,11 +49,15 @@ class LinearRegressionModel():
             self.b -= self.lr * db
 
             #Print the current state every 100 epoch
-            if (epoch + 1) % 100 == 0:
-                print(f"Epoch [{epoch + 1}/{self.epochs}], Loss: {loss:}")
+            if (epoch + 1) % self.print_rate == 0:
+                print(f"Epoch [{epoch + 1}/{self.epochs}], Loss: {loss:.4f}")
 
-            if loss == 0:
+            #Early stopping for better performance
+            if prev_loss is not None and abs(prev_loss - loss) < tol:
+                print(f"Converged at epoch {epoch + 1}, Loss: {loss:.4f}")
                 break
+
+            prev_loss = loss
 
     def predict(self, X: np.ndarray | int):
         if not isinstance(X, np.ndarray):
