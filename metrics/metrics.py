@@ -1,4 +1,5 @@
 import numpy as np
+import math
 
 def calculate_mse(y_trues: np.ndarray, y_predicteds: np.ndarray) -> float:
     """
@@ -19,4 +20,6 @@ def calculate_mse(y_trues: np.ndarray, y_predicteds: np.ndarray) -> float:
     mse = np.sum(mse_matrix) / float(m)
 
     return float(mse)
-    
+
+def calculate_rmse(y_trues: np.ndarray, y_predicteds: np.ndarray) -> float:
+    return math.sqrt(calculate_mse(y_trues, y_predicteds))
