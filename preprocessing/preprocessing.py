@@ -34,3 +34,13 @@ class StandardScaler:
         Learns the mean and standard deviation and scales the data
         """
         return self.fit(X).transform(X)
+
+def train_test_split(X: np.ndarray, y: np.ndarray, test_size: float = 0.2) -> tuple[np.ndarray, np.ndarray, np.ndarray, np.ndarray]:
+    sample_size = X.shape[0]
+    indices = np.random.permutation(sample_size)
+    test_count = int(sample_size * test_size)
+
+    test_indices = indices[:test_count]
+    train_indices = indices[test_count:]
+
+    return X[train_indices], X[test_indices], y[train_indices], y[test_indices]
