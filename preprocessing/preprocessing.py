@@ -36,6 +36,10 @@ class StandardScaler:
         return self.fit(X).transform(X)
 
 def train_test_split(X: np.ndarray, y: np.ndarray, test_size: float = 0.2) -> tuple[np.ndarray, np.ndarray, np.ndarray, np.ndarray]:
+    """
+    Splits the data into 2 groups as train and test
+    Returns X_train, X_test, y_train, y_test
+    """
     sample_size = X.shape[0]
     indices = np.random.permutation(sample_size)
     test_count = int(sample_size * test_size)
