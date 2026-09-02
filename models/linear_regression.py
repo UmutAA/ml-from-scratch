@@ -48,7 +48,7 @@ class LinearRegressionModel():
             self.w -= self.lr * dw
             self.b -= self.lr * db
 
-            #Print the current state every 100 epoch
+            #Print the current state
             if (epoch + 1) % self.print_rate == 0:
                 print(f"Epoch [{epoch + 1}/{self.epochs}], Loss: {loss:.4f}")
 
