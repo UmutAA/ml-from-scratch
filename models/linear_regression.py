@@ -59,7 +59,7 @@ class LinearRegressionModel():
 
             prev_loss = loss
 
-    def predict(self, X: np.ndarray | int):
+    def predict(self, X: np.ndarray):
         if not isinstance(X, np.ndarray):
             X = np.asarray(X)
         
