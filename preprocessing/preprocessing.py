@@ -48,3 +48,38 @@ def train_test_split(X: np.ndarray, y: np.ndarray, test_size: float = 0.2) -> tu
     train_indices = indices[test_count:]
 
     return X[train_indices], X[test_indices], y[train_indices], y[test_indices]
+
+class LabelEncoder:
+    def __init__(self):
+        self.classes_ = None
+        self.n_classes_ = None
+        self.mapping = {}
+
+    def fit(self, y: np.ndarray):
+        if not isinstance(y, np.ndarray):
+            y = np.asarray(y)
+
+        self.classes_, inverse = np.unique(y)
+        self.n_classes_ = len(self.classes_)
+
+        for i, val in enumerate(self.classes_):
+            self.mapping[val] = i
+
+        return self
+
+    def transform(self, y: np.ndarray) -> np.ndarray:
+        if not isinstance(y, np.ndarray):
+            y = np.asarray(y)
+
+        transformed_y = np.empty(y.shape, dtype=int)
+        for row in range(y.shape[0]):
+            if y[row] not in self.mapping:
+                raise ValueError(f"Label {y[row]} not in mapping")
+
+            transformed_y[row] = self.mapping[y[row]]
+
+        return transformed_y
+
+    def fit_transform(self, y: np.ndarray) -> np.ndarray:
+        self.fit(y)
+        return self.transform(y)
