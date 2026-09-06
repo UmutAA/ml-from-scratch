@@ -1,7 +1,7 @@
 import numpy as np
 import math
 
-def calculate_mse(y_trues: np.ndarray, y_predicteds: np.ndarray) -> float:
+def calculate_mse(y_trues: np.ndarray, y_predicts: np.ndarray) -> float:
     """
     Calculates and returns mean squared errors
     """
@@ -9,20 +9,20 @@ def calculate_mse(y_trues: np.ndarray, y_predicteds: np.ndarray) -> float:
     if not isinstance(y_trues, np.ndarray):
         y_trues = np.asarray(y_trues)
     
-    if not isinstance(y_predicteds, np.ndarray):
-        y_predicteds = np.asarray(y_predicteds)
+    if not isinstance(y_predicts, np.ndarray):
+        y_predicts = np.asarray(y_predicts)
 
     m = y_trues.shape[0]
     if m == 0:
         raise ZeroDivisionError("Dimension can't be 0")
 
-    mse_matrix = (y_trues - y_predicteds) ** 2
+    mse_matrix = (y_trues - y_predicts) ** 2
     mse = np.sum(mse_matrix) / float(m)
 
     return float(mse)
 
-def calculate_rmse(y_trues: np.ndarray, y_predicteds: np.ndarray) -> float:
-    return math.sqrt(calculate_mse(y_trues, y_predicteds))
+def calculate_rmse(y_trues: np.ndarray, y_predicts: np.ndarray) -> float:
+    return math.sqrt(calculate_mse(y_trues, y_predicts))
 
 def sigmoid(z: np.ndarray) -> np.ndarray:
     p = 1 / (1 + np.exp(-z))
