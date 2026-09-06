@@ -49,3 +49,20 @@ def calculate_bce(y: np.ndarray, p: np.ndarray) -> float:
     bce = - np.sum(bce_matrix) / float(n)
 
     return float(bce)
+
+def confusion_matrix(y_trues: np.ndarray, y_predicts: np.ndarray) -> np.ndarray:
+    conf_matrix = np.zeros((2, 2))
+
+    for i, true_value in enumerate(y_trues):
+        predicted_value = y_predicts[i]
+        if true_value == 1 and predicted_value == 1:
+            conf_matrix[0, 0] += 1 #TP
+        elif true_value == 1 and predicted_value == 0:
+            conf_matrix[0, 1] += 1 #FN
+        elif true_value == 0 and predicted_value == 1:
+            conf_matrix[1, 0] += 1 #FP
+        else:
+            conf_matrix[1, 1] += 1 #TN
+
+    return conf_matrix
+
