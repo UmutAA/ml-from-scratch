@@ -1,5 +1,9 @@
 import numpy as np
 import math
+import pandas as pd
+from exceptions import IncompatibleDimension
+from preprocessing.preprocessing import LabelEncoder
+
 
 def calculate_mse(y_trues: np.ndarray, y_predicts: np.ndarray) -> float:
     """
@@ -15,6 +19,7 @@ def calculate_mse(y_trues: np.ndarray, y_predicts: np.ndarray) -> float:
     m = y_trues.shape[0]
     if m == 0:
         raise ZeroDivisionError("Dimension can't be 0")
+        return
 
     mse_matrix = (y_trues - y_predicts) ** 2
     mse = np.sum(mse_matrix) / float(m)
@@ -44,6 +49,7 @@ def calculate_bce(y: np.ndarray, p: np.ndarray) -> float:
 
     if n == 0:
         raise ZeroDivisionError("Dimension can't be 0")
+        return
     
     bce_matrix = y * np.log(p) + (1 - y) * np.log(1 - p)
     bce = - np.sum(bce_matrix) / float(n)
@@ -51,18 +57,28 @@ def calculate_bce(y: np.ndarray, p: np.ndarray) -> float:
     return float(bce)
 
 def confusion_matrix(y_trues: np.ndarray, y_predicts: np.ndarray) -> np.ndarray:
-    conf_matrix = np.zeros((2, 2))
+    """
+    Calculates and returns confusion matrix
+    """
 
-    for i, true_value in enumerate(y_trues):
-        predicted_value = y_predicts[i]
-        if true_value == 1 and predicted_value == 1:
-            conf_matrix[0, 0] += 1 #TP
-        elif true_value == 1 and predicted_value == 0:
-            conf_matrix[0, 1] += 1 #FN
-        elif true_value == 0 and predicted_value == 1:
-            conf_matrix[1, 0] += 1 #FP
-        else:
-            conf_matrix[1, 1] += 1 #TN
+    if not isinstance(y_trues, np.ndarray):
+        y_trues = np.asarray(y_trues)
+
+    if not isinstance(y_predicts, np.ndarray):
+        y_predicts = np.asarray(y_predicts)
+
+    uniques = np.unique(np.concatenate((y_trues, y_predicts)))
+
+    num_classes = len(uniques)
+    conf_matrix = np.zeros((num_classes, num_classes), dtype=int)
+
+    le = LabelEncoder()
+    le.fit(uniques)
+
+    y_trues_encoded = le.transform(y_trues)
+    y_predicts_encoded = le.transform(y_predicts)
+
+    for i in range (y_trues.shape[0]):
+        conf_matrix[y_trues_encoded[i], y_predicts_encoded[i]] += 1
 
     return conf_matrix
-
