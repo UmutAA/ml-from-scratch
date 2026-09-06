@@ -59,11 +59,11 @@ class LabelEncoder:
         if not isinstance(y, np.ndarray):
             y = np.asarray(y)
 
-        self.classes_ = np.unique(y)
+        self.classes_, inverse = np.unique(y)
         self.n_classes_ = len(self.classes_)
 
-        for encoded, value in enumerate(self.classes_):
-            self.mapping[value] = encoded
+        for i, val in enumerate(self.classes_):
+            self.mapping[val] = i
 
         return self
 
