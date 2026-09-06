@@ -1,4 +1,3 @@
-import pandas as pd
 import numpy as np
 from models.linear_regression import LinearRegressionModel
 from models.logistic_regression import LogisticRegressionModel
