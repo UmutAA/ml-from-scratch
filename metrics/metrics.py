@@ -1,9 +1,7 @@
 import numpy as np
 import math
 import pandas as pd
-from exceptions import IncompatibleDimension
 from preprocessing.preprocessing import LabelEncoder
-
 
 def calculate_mse(y_trues: np.ndarray, y_predicts: np.ndarray) -> float:
     """
@@ -82,7 +80,6 @@ def confusion_matrix(y_trues: np.ndarray, y_predicts: np.ndarray) -> np.ndarray:
         conf_matrix[y_trues_encoded[i], y_predicts_encoded[i]] += 1
 
     return conf_matrix
-
 
 def classification_report(y_true: np.ndarray, y_pred: np.ndarray, labels:list[str] | None = None, output_dict: bool = False) -> dict[str,dict[str,float]] | pd.DataFrame:
     """
