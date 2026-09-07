@@ -82,3 +82,65 @@ def confusion_matrix(y_trues: np.ndarray, y_predicts: np.ndarray) -> np.ndarray:
         conf_matrix[y_trues_encoded[i], y_predicts_encoded[i]] += 1
 
     return conf_matrix
+
+
+def classification_report(y_true: np.ndarray, y_pred: np.ndarray, labels:list[str] | None = None, output_dict: bool = False) -> dict[str,dict[str,float]] | pd.DataFrame:
+    """
+    Calculates classification report and returns as either
+    dict (output_dict = True) or pd.DataFrame (output_dict = False)
+    """
+
+    if not isinstance(y_true, np.ndarray):
+        y_true = np.asarray(y_true)
+
+    if not isinstance(y_pred, np.ndarray):
+        y_pred = np.asarray(y_pred)
+
+    unique_classes = np.unique(np.concatenate((y_true, y_pred)))
+
+    if labels is not None:
+        if len(labels) != len(unique_classes):
+            raise ValueError("labels' size must match the number of unique classes")
+    else:
+        labels = [str(c) for c in unique_classes]
+
+    report = {}
+    conf_matrix = confusion_matrix(y_true, y_pred)
+    accuracy: float
+
+    if y_true.shape[0] > 0:
+        accuracy = np.trace(conf_matrix) / float(y_true.shape[0])
+    else:
+        accuracy = 0.0
+
+    for i, label in enumerate(labels):
+        tp = conf_matrix[i, i]
+        pred_sum = np.sum(conf_matrix[:, i])  # Column sum (TP + FP)
+        true_sum = np.sum(conf_matrix[i, :])  # Row sum (TP + FN)
+
+        precision = tp / pred_sum if pred_sum > 0 else 0.0
+        recall = tp / true_sum if true_sum > 0 else 0.0
+
+        if (precision + recall) > 0:
+            f1_score = 2 * (precision * recall) / (precision + recall)
+        else:
+            f1_score = 0.0
+
+        report[str(label)] = {
+            "precision": float(precision),
+            "recall": float(recall),
+            "f1_score": float(f1_score),
+            "support": int(true_sum)
+        }
+
+    report["accuracy"] = {
+        "precision": None,
+        "recall": None,
+        "f1_score": float(accuracy),
+        "support": int(y_true.shape[0])
+    }
+
+    if not output_dict:
+        report = pd.DataFrame(report).T
+
+    return report
