@@ -78,29 +78,34 @@ class LogisticRegressionModel():
             return value.astype(int)
 
     def plot(self, X: np.ndarray, y: np.ndarray):
-        if X.ndim > 1 and X.shape[1] > 1:
+        X = np.asarray(X)
+        if X.ndim == 1:
+            X = X.reshape(-1, 1)
+
+        if X.shape[1] > 1:
             print("Can't plot 2D plots of multivariate values")
             return
-        
-        # 1. Plot actual classes (observed values) directly
+
+        # Plot actual classes (observed values) directly
         plt.scatter(X, y, c="green", alpha=0.5, label="Actual Classes (Observed)", zorder=3)
-        
-        # 2. Sort X values to ensure a smooth continuous sigmoid curve plot
+
+        # Sort X values to ensure a smooth continuous sigmoid curve plot
         sort_idx = np.argsort(X.flatten())
         X_sorted = X[sort_idx]
-        
+
         z = np.dot(X_sorted, self.w) + self.b
         probabilities = sigmoid(z)
-        
+
         plt.plot(X_sorted, probabilities, color="red", label="Predicted Probabilities (Sigmoid)", linewidth=2, zorder=2)
-        
-        # 3. Display discrete model classification predictions (0 or 1) on the curve
+
+        # Display discrete model classification predictions (0 or 1) on the curve
         y_pred_classes = self.predict(X_sorted, boolean=False)
-        plt.scatter(X_sorted, y_pred_classes, c="blue", marker="x", alpha=0.7, label="Model Predictions (0 or 1)", zorder=4)
-        
-        # 4. Draw decision threshold boundary line at 0.5 probability
+        plt.scatter(X_sorted, y_pred_classes, c="blue", marker="x", alpha=0.7, label="Model Predictions (0 or 1)",
+                    zorder=4)
+
+        # Draw decision threshold boundary line at 0.5 probability
         plt.axhline(0.5, color="orange", linestyle="--", alpha=0.7, label="Decision Threshold (0.5)")
-        
+
         plt.xlabel("X (Feature)")
         plt.ylabel("Probability / Class")
         plt.legend(loc="center left")

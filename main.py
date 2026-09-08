@@ -1,20 +1,26 @@
 import numpy as np
+
+from metrics.metrics import classification_report, confusion_matrix
 from models.linear_regression import LinearRegressionModel
 from models.logistic_regression import LogisticRegressionModel
-from preprocessing.preprocessing import StandardScaler
+from preprocessing.preprocessing import StandardScaler, train_test_split
 
-def generate_synthetic_data(n_samples: int = 100):
+
+def generate_synthetic_data(n_samples: int = 100, noise_std: float = 0.5):
     """
     Generates a linearly separable synthetic dataset for testing.
     """
     np.random.seed(42)
     X = np.random.uniform(-2, 2, size=(n_samples, 1))
-    
-    z = 2.5 * X.squeeze() + 0.5
+
+    noise = np.random.normal(0, noise_std, size=n_samples)
+    z = 2.5 * X.squeeze() + 0.5 + noise
+
     probabilities = 1 / (1 + np.exp(-z))
     y = np.array([1 if p > 0.5 else 0 for p in probabilities])
-    
+
     return X, y
+
 
 if __name__ == "__main__":
 
@@ -50,25 +56,29 @@ if __name__ == "__main__":
     #Logistic Regression Model Test
 
     print("1. Generating synthetic dataset...")
-    X_train, y_train = generate_synthetic_data(n_samples=150)
-        
-    print(f"Data shapes - X: {X_train.shape}, y: {y_train.shape}")
-        
+    X, y = generate_synthetic_data(n_samples=200)
+    X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.25)
+
+    print(f"Data shapes - X_train: {X_train.shape}, X_test: {X_test.shape}")
+
     print("\n2. Initializing and training LogisticRegressionModel...")
     model = LogisticRegressionModel(learning_rate=0.5, epochs=2000, print_rate=500)
     model.fit(X_train, y_train)
-        
     print("\n3. Printing learned formula:")
     model.print_formula()
-        
-    print("\n4. Making predictions on test samples...")
-    sample_test = np.array([[-1.5], [0.0], [1.5]])
-    predictions = model.predict(sample_test, boolean=False)
-        
-    for val, pred in zip(sample_test.flatten(), predictions):
-        print(f"Input: {val:+.1f} --> Predicted Class: {pred}")
 
-    print("\n5. Plotting decision boundary/predictions...")
-    model.plot(X_train, y_train)
+    print("\n4. Making predictions on the test set...")
+    test_predictions = model.predict(X_test, boolean=False)
+
+    print("\n5. Plotting decision boundary on the training data...")
+    model.plot(X_test, y_test)
+
+    print("\n6. Plotting confusion matrix...")
+    cf = confusion_matrix(y_test, test_predictions)
+    print(cf)
+
+    print("\n7. Classification report on the test set:")
+    report = classification_report(y_test, test_predictions)
+    print(report)
 
 

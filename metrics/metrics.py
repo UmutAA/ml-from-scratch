@@ -130,14 +130,10 @@ def classification_report(y_true: np.ndarray | list[float], y_pred: np.ndarray |
             "support": int(true_sum)
         }
 
-    report["accuracy"] = {
-        "precision": None,
-        "recall": None,
-        "f1_score": float(accuracy),
-        "support": int(y_true.shape[0])
-    }
+    if output_dict:
+        report["accuracy"] = float(accuracy)
+        return report
 
-    if not output_dict:
-        report = pd.DataFrame(report).T
-
-    return report
+    df = pd.DataFrame(report).T
+    print(f"\nAccuracy: {accuracy:.4f}\n")
+    return df
