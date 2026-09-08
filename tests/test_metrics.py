@@ -120,7 +120,7 @@ class TestClassificationReport:
         y_pred = np.array([0, 0, 1, 1])
         report = classification_report(y_true, y_pred, output_dict=True)
 
-        assert report["accuracy"]["f1_score"] == pytest.approx(1.0)
+        assert report["accuracy"] == pytest.approx(1.0)
 
     def test_labels_length_mismatch_raises(self):
         y_true = np.array([0, 1])
