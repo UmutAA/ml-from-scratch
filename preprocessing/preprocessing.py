@@ -27,6 +27,10 @@ class StandardScaler:
             raise RuntimeError("Scales has not been fitted yet! Must call .fit() method first")
         
         X = np.asarray(X, dtype=np.float64)
+
+        if X.ndim == 1:
+            X = X.reshape(-1, 1)
+
         return ((X - self.mean) / self.scale)
 
     def fit_transform(self, X: np.ndarray) -> np.ndarray:
@@ -59,7 +63,7 @@ class LabelEncoder:
         if not isinstance(y, np.ndarray):
             y = np.asarray(y)
 
-        self.classes_, inverse = np.unique(y)
+        self.classes_ = np.unique(y)
         self.n_classes_ = len(self.classes_)
 
         for i, val in enumerate(self.classes_):
@@ -68,6 +72,10 @@ class LabelEncoder:
         return self
 
     def transform(self, y: np.ndarray) -> np.ndarray:
+
+        if self.classes_ is None:
+            raise RuntimeError("LabelEncoder has not been fitted yet! Must call .fit() method first")
+
         if not isinstance(y, np.ndarray):
             y = np.asarray(y)
 
