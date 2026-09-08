@@ -3,7 +3,7 @@ import math
 import pandas as pd
 from preprocessing.preprocessing import LabelEncoder
 
-def calculate_mse(y_trues: np.ndarray, y_predicts: np.ndarray) -> float:
+def calculate_mse(y_trues: np.ndarray | list[float], y_predicts: np.ndarray | list[float]) -> float:
     """
     Calculates and returns mean squared errors
     """
@@ -24,7 +24,7 @@ def calculate_mse(y_trues: np.ndarray, y_predicts: np.ndarray) -> float:
 
     return float(mse)
 
-def calculate_rmse(y_trues: np.ndarray, y_predicts: np.ndarray) -> float:
+def calculate_rmse(y_trues: np.ndarray | list[float], y_predicts: np.ndarray | list[float]) -> float:
     return math.sqrt(calculate_mse(y_trues, y_predicts))
 
 def sigmoid(z: np.ndarray) -> np.ndarray:
@@ -33,7 +33,7 @@ def sigmoid(z: np.ndarray) -> np.ndarray:
     p = np.clip(p, eps, 1 - eps)
     return p
 
-def calculate_bce(y: np.ndarray, p: np.ndarray) -> float:
+def calculate_bce(y: np.ndarray | list[float], p: np.ndarray | list[float]) -> float:
     """
     Calculates and returns binary cross entropy error (Log loss)
     """
@@ -54,7 +54,7 @@ def calculate_bce(y: np.ndarray, p: np.ndarray) -> float:
 
     return float(bce)
 
-def confusion_matrix(y_trues: np.ndarray, y_predicts: np.ndarray) -> np.ndarray:
+def confusion_matrix(y_trues: np.ndarray | list[float], y_predicts: np.ndarray | list[float]) -> np.ndarray:
     """
     Calculates and returns confusion matrix
     """
@@ -81,7 +81,7 @@ def confusion_matrix(y_trues: np.ndarray, y_predicts: np.ndarray) -> np.ndarray:
 
     return conf_matrix
 
-def classification_report(y_true: np.ndarray, y_pred: np.ndarray, labels:list[str] | None = None, output_dict: bool = False) -> dict[str,dict[str,float]] | pd.DataFrame:
+def classification_report(y_true: np.ndarray | list[float], y_pred: np.ndarray | list[float], labels:list[str] | None = None, output_dict: bool = False) -> dict[str,dict[str,float]] | pd.DataFrame:
     """
     Calculates classification report and returns as either
     dict (output_dict = True) or pd.DataFrame (output_dict = False)
