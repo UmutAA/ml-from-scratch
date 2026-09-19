@@ -33,6 +33,15 @@ def sigmoid(z: np.ndarray) -> np.ndarray:
     p = np.clip(p, eps, 1 - eps)
     return p
 
+def softmax(z: np.ndarray) -> np.ndarray:
+    """
+    Computes softmax function.
+    :param z: array of input values.
+    Returns an array of outputs with the same shape as z.
+    """
+    exp_z = np.exp(z - np.max(z, axis=-1, keepdims=True))
+    return exp_z / np.sum(exp_z, axis=-1, keepdims=True)
+
 def calculate_bce(y: np.ndarray | list[float], p: np.ndarray | list[float]) -> float:
     """
     Calculates and returns binary cross entropy error (Log loss)

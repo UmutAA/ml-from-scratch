@@ -6,6 +6,7 @@ from metrics.metrics import (
     calculate_mse,
     calculate_rmse,
     sigmoid,
+    softmax,
     calculate_bce,
     confusion_matrix,
     classification_report,
@@ -80,6 +81,33 @@ class TestSigmoid:
         def test_empty_input_raises(self):
             with pytest.raises(ZeroDivisionError):
                 calculate_bce(np.array([]), np.array([]))
+
+class TestSoftmax:
+    def test_sum_to_one(self):
+        z = np.array([1.0, 2.0, 3.0])
+        result = softmax(z)
+        assert np.sum(result) == pytest.approx(1.0)
+
+    def test_numerical_stability(self):
+        z = np.array([1000.0, 1001.0, 999.0])
+        result = softmax(z)
+        assert np.isnan(result).any() == False
+        assert np.isinf(result).any() == False
+
+        assert np.sum(result) == pytest.approx(1.0)
+
+        assert (result[1] > result[0] and result[1] > result[2]) == True
+
+    def test_batch_2d(self):
+        z = np.array([
+            [1.0, 2.0],
+            [1000.0, 1001.0]
+        ])
+        result = softmax(z)
+
+        assert result.shape == z.shape
+        row_sums = np.sum(result, axis=1)
+        np.testing.assert_allclose(row_sums, [1.0, 1.0], atol=1e-5)
 
 class TestConfusionMatrix:
     def test_perfect_predictions_are_all_on_diagonal(self):
