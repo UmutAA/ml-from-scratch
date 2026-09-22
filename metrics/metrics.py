@@ -63,6 +63,28 @@ def calculate_bce(y: np.ndarray | list[float], p: np.ndarray | list[float]) -> f
 
     return float(bce)
 
+def calculate_cce(y_true_onehot: np.ndarray, y_pred_proba: np.ndarray, eps: float = 1e-12) -> float:
+    """
+    Calculates and returns categorical cross entropy error (Log loss)
+    """
+
+    if not isinstance(y_true_onehot, np.ndarray):
+        y_true_onehot = np.asarray(y_true_onehot, dtype=np.float64)
+
+    if not isinstance(y_pred_proba, np.ndarray):
+        y_pred_proba = np.asarray(y_pred_proba, dtype=np.float64)
+
+    m = y_true_onehot.shape[0]
+    if m == 0:
+        raise ZeroDivisionError("Dimension can't be 0")
+
+    y_pred_clipped = np.clip(y_pred_proba, eps, 1 - eps)
+    cce_matrix = y_true_onehot * np.log(y_pred_clipped)
+    cce = -np.sum(cce_matrix) / float(m)
+
+    return float(cce)
+
+
 def confusion_matrix(y_trues: np.ndarray | list[float], y_predicts: np.ndarray | list[float]) -> np.ndarray:
     """
     Calculates and returns confusion matrix
