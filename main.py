@@ -2,7 +2,7 @@ import numpy as np
 
 from metrics.metrics import classification_report, confusion_matrix
 from models.linear_regression import LinearRegressionModel
-from models.logistic_regression import LogisticRegressionModel
+from models.logistic_regression import BinaryLogisticRegressionModel
 from preprocessing.preprocessing import StandardScaler, train_test_split
 
 
@@ -62,7 +62,7 @@ if __name__ == "__main__":
     print(f"Data shapes - X_train: {X_train.shape}, X_test: {X_test.shape}")
 
     print("\n2. Initializing and training LogisticRegressionModel...")
-    model = LogisticRegressionModel(learning_rate=0.5, epochs=2000, print_rate=500)
+    model = BinaryLogisticRegressionModel(learning_rate=0.5, epochs=2000, print_rate=500)
     model.fit(X_train, y_train)
     print("\n3. Printing learned formula:")
     model.print_formula()
