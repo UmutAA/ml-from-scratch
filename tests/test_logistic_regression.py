@@ -1,12 +1,13 @@
 import numpy as np
 import pytest
 
-from models.logistic_regression import LogisticRegressionModel
+from models.logistic_regression import (BinaryLogisticRegressionModel,
+                                        MultinomialLogisticRegressionModel)
 
-class TestLogisticRegressionModel:
+class TestBinaryLogisticRegressionModel:
     def test_predictions_match_true_labels_on_separable_data(self, separable_data):
         X, y = separable_data
-        model = LogisticRegressionModel(learning_rate=0.5, epochs=2000)
+        model = BinaryLogisticRegressionModel(learning_rate=0.5, epochs=2000)
         model.fit(X, y)
 
         preds = model.predict(X)
@@ -15,7 +16,7 @@ class TestLogisticRegressionModel:
 
     def test_predict_returns_boolean_when_requested(self, separable_data):
         X, y = separable_data
-        model = LogisticRegressionModel(learning_rate=0.5, epochs=500)
+        model = BinaryLogisticRegressionModel(learning_rate=0.5, epochs=500)
         model.fit(X, y)
 
         preds = model.predict(X, boolean=True)
@@ -23,7 +24,7 @@ class TestLogisticRegressionModel:
 
     def test_predict_returns_int_by_default(self, separable_data):
         X, y = separable_data
-        model = LogisticRegressionModel(learning_rate=0.5, epochs=500)
+        model = BinaryLogisticRegressionModel(learning_rate=0.5, epochs=500)
         model.fit(X, y)
 
         preds = model.predict(X)
@@ -31,7 +32,7 @@ class TestLogisticRegressionModel:
 
     def test_predict_shape_matches_input_rows(self, separable_data):
         X, y = separable_data
-        model = LogisticRegressionModel(learning_rate=0.5, epochs=500)
+        model = BinaryLogisticRegressionModel(learning_rate=0.5, epochs=500)
         model.fit(X, y)
 
         preds = model.predict(X)
@@ -39,12 +40,12 @@ class TestLogisticRegressionModel:
 
     def test_loss_decreases_over_training(self, separable_data):
         X, y = separable_data
-        model = LogisticRegressionModel(learning_rate=0.5, epochs=200)
+        model = BinaryLogisticRegressionModel(learning_rate=0.5, epochs=200)
         model.fit(X, y)
 
         assert model.loss_history[-1] < model.loss_history[0]
 
     def test_print_formula_before_fit_raises(self):
-        model = LogisticRegressionModel()
+        model = BinaryLogisticRegressionModel()
         with pytest.raises(RuntimeError):
             model.print_formula()
