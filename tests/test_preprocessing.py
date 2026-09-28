@@ -3,6 +3,7 @@ import pytest
 
 from preprocessing.preprocessing import (
 StandardScaler,
+MinMaxScaler,
 LabelEncoder,
 train_test_split,
 )
@@ -50,6 +51,40 @@ class TestStandardScaler:
         scaler = StandardScaler()
         X_scaled = scaler.fit_transform(X)
         assert X_scaled.shape == (3, 1)
+
+# ------------------- MinMaxScaler -------------------
+class TestMinMaxScaler:
+    def test_min_max_bounds(self):
+        X = np.array([[10.0, 100.0],
+                      [15.0, 150.0],
+                      [20.0, 200.0]])
+
+        scaler = MinMaxScaler()
+        X_scaled = scaler.fit_transform(X)
+
+        assert np.allclose(X_scaled[0], [0.0, 0.0])
+        assert np.allclose(X_scaled[1], [0.5, 0.5])
+        assert np.allclose(X_scaled[2], [1.0, 1.0])
+
+    def test_constant_column_does_not_divide_by_zero(self):
+        X = np.array([[10.0, 5.0],
+                      [20.0, 5.0],
+                      [30.0, 5.0]])
+
+        scaler = MinMaxScaler()
+        X_scaled = scaler.fit_transform(X)
+
+        assert not np.isnan(X_scaled).any()
+        assert not np.isinf(X_scaled).any()
+        assert np.allclose(X_scaled[:, 1], [0.0, 0.0, 0.0])
+
+    def test_accepts_1d_input(self):
+        X = np.array([10.0, 15.0, 20.0])
+        scaler = MinMaxScaler()
+        X_scaled = scaler.fit_transform(X)
+
+        assert X_scaled.shape == (3, 1)
+        assert np.allclose(X_scaled, [[0.0], [0.5], [1.0]])
 
 # ------------------- TrainTestSplit -------------------
 

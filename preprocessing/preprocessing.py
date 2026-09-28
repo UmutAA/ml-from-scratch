@@ -11,7 +11,7 @@ class Scaler(ABC):
         pass
 
     def fit_transform(self, X: np.ndarray) -> np.ndarray:
-        return self.fit(X).self.transform(X)
+        return self.fit(X).transform(X)
 
 
 class StandardScaler(Scaler):
@@ -63,9 +63,17 @@ class MinMaxScaler(Scaler):
         self.max = np.max(X, axis=0)
         return self
 
-    # TODO:
     def transform(self, X: np.ndarray) -> np.ndarray:
-        pass
+        X = np.asarray(X, dtype=np.float64)
+
+        if X.ndim == 1:
+            X = X.reshape(-1, 1)
+
+        denom = self.max - self.min
+        denom_safe = np.where(denom == 0, 1.0, denom)
+
+        X_scaled = (X - self.min) / denom_safe
+        return X_scaled
 
 def train_test_split(X: np.ndarray, y: np.ndarray, test_size: float = 0.2) -> tuple[np.ndarray, np.ndarray, np.ndarray, np.ndarray]:
     """
