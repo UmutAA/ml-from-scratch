@@ -59,9 +59,64 @@ def _ols(X, y):
     m.fit(X, y, tol=1e-14)
     return m
 
-#TODO: Implement test cases for new models
 class TestLasso:
-    pass
+    def test_alpha_effect_on_coefficients(self):
+        np.random.seed(42)
+        X = np.random.randn(50, 2)
+        y = 3.0 * X[:, 0] + 2.0 * X[:, 1]
+
+        model_small = Lasso(alpha=0.01)
+        model_small.fit(X, y)
+
+        model_large = Lasso(alpha=2.0)
+        model_large.fit(X, y)
+
+        assert np.sum(np.abs(model_large.w)) < np.sum(np.abs(model_small.w))
+
+    def test_predictions_shape(self):
+        X_train = np.random.randn(40, 4)
+        y_train = np.random.randn(40)
+        X_test = np.random.randn(10, 4)
+
+        model = Lasso(alpha=0.1)
+        model.fit(X_train, y_train)
+        predictions = model.predict(X_test)
+
+        assert predictions.shape == (10,) or predictions.shape == (10, 1)
+
 
 class TestRidge:
-    pass
+    def test_alpha_effect_on_coefficients(self):
+        np.random.seed(42)
+        X = np.random.randn(50, 2)
+        y = 3.0 * X[:, 0] + 2.0 * X[:, 1]
+
+        model_small = Ridge(alpha=0.001, learning_rate=0.01, epochs=1000)
+        model_small.fit(X, y)
+
+        model_large = Ridge(alpha=1.0, learning_rate=0.01, epochs=1000)
+        model_large.fit(X, y)
+
+        assert np.sum(np.abs(model_large.w)) < np.sum(np.abs(model_small.w))
+
+    def test_predictions_shape(self):
+        X_train = np.random.randn(40, 4)
+        y_train = np.random.randn(40)
+        X_test = np.random.randn(10, 4)
+
+        model = Ridge(alpha=0.1)
+        model.fit(X_train, y_train)
+        predictions = model.predict(X_test)
+
+        assert predictions.shape == (10,) or predictions.shape == (10, 1)
+
+    def test_coefficients_shrink_but_not_zero(self):
+        np.random.seed(42)
+        X = np.random.randn(50, 2)
+        y = 5.0 * X[:, 0] + np.random.randn(50) * 0.1
+
+        model = Ridge(alpha=5.0)
+        model.fit(X, y)
+
+        assert np.abs(model.w[1]) < 1.0
+        assert model.w[1] != 0.0
