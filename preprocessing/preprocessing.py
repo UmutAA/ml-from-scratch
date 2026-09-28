@@ -1,6 +1,20 @@
 import numpy as np
+from abc import ABC, abstractmethod
 
-class StandardScaler:
+class Scaler(ABC):
+    @abstractmethod
+    def fit(self, X: np.ndarray):
+        pass
+
+    @abstractmethod
+    def transform(self, X: np.ndarray) -> np.ndarray:
+        pass
+
+    def fit_transform(self, X: np.ndarray) -> np.ndarray:
+        return self.fit(X).self.transform(X)
+
+
+class StandardScaler(Scaler):
     def __init__(self):
         self.mean = None
         self.scale = None
@@ -25,7 +39,7 @@ class StandardScaler:
         """
         if self.mean is None or self.scale is None:
             raise RuntimeError("Scales has not been fitted yet! Must call .fit() method first")
-        
+
         X = np.asarray(X, dtype=np.float64)
 
         if X.ndim == 1:
@@ -33,11 +47,25 @@ class StandardScaler:
 
         return ((X - self.mean) / self.scale)
 
-    def fit_transform(self, X: np.ndarray) -> np.ndarray:
-        """
-        Learns the mean and standard deviation and scales the data
-        """
-        return self.fit(X).transform(X)
+
+class MinMaxScaler(Scaler):
+    def __init__(self):
+        self.min = None
+        self.max = None
+
+    def fit(self, X: np.ndarray):
+        X = np.asarray(X, dtype=np.float64)
+
+        if X.ndim == 1:
+            X = X.reshape(-1, 1)
+
+        self.min = np.min(X, axis=0)
+        self.max = np.max(X, axis=0)
+        return self
+
+    # TODO:
+    def transform(self, X: np.ndarray) -> np.ndarray:
+        pass
 
 def train_test_split(X: np.ndarray, y: np.ndarray, test_size: float = 0.2) -> tuple[np.ndarray, np.ndarray, np.ndarray, np.ndarray]:
     """
