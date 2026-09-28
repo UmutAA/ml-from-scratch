@@ -19,11 +19,13 @@ class LinearRegressionModel():
         if not isinstance(y, np.ndarray):
             y = np.asarray(y)
 
-        self.b = np.mean(y)
+        self.b = 0.0
 
         #Reshape the inputs matrix as column matrix
         if X.ndim == 1:
             X = X.reshape(-1,1)
+
+        y = y.flatten()
 
         m,n = X.shape #m row n columns: m samples, n features
         self.w = np.zeros(n, dtype=float)
@@ -90,3 +92,115 @@ class LinearRegressionModel():
             formula = formula[2:]
             
         print(f"Learned formula: \ny = {formula}")
+
+class Lasso(LinearRegressionModel):
+    def __init__(self, learning_rate: float = 0.1, epochs: int = 1000, print_rate: int = 1000, alpha: float = 1.0):
+        super().__init__(learning_rate, epochs, print_rate)
+        self.alpha = alpha
+
+    def fit(self, X: np.ndarray, y: np.ndarray, tol: float = 1e-8):
+        if not isinstance(X, np.ndarray):
+            X = np.asarray(X)
+
+        if not isinstance(y, np.ndarray):
+            y = np.asarray(y)
+
+        self.b = 0.0
+
+        # Reshape the inputs matrix as column matrix
+        if X.ndim == 1:
+            X = X.reshape(-1, 1)
+
+        y = y.flatten()
+
+        m, n = X.shape  # m row n columns: m samples, n features
+        self.w = np.zeros(n, dtype=float)
+        prev_loss = None
+
+        # Training loop
+        for epoch in range(self.epochs):
+            # Matrix multiplication (m,n) @ (n,1) -> (m,1)
+            y_preds = np.dot(X, self.w) + self.b
+
+            # Calculating loss using mse function
+            loss = calculate_mse(y, y_preds) +  (self.alpha * np.sum(np.abs(self.w)))
+            self.loss_history.append(loss)
+
+            # Adjusting parameters
+
+            # Calculating gradients
+            dw_mse = (-2.0 / m) * np.dot(X.T, (y - y_preds))
+            dw_l1 = self.alpha * np.sign(self.w)
+            dw = dw_l1 + dw_mse
+            db = (-2.0 / m) * np.sum((y - y_preds))
+
+            # Gradient Descent
+            self.w -= self.lr * dw
+            self.b -= self.lr * db
+
+            # Print the current state
+            if (epoch + 1) % self.print_rate == 0:
+                print(f"Epoch [{epoch + 1}/{self.epochs}], Loss: {loss:.4f}")
+
+            # Early stopping for better performance
+            if prev_loss is not None and abs(prev_loss - loss) < tol:
+                print(f"Converged at epoch {epoch + 1}, Loss: {loss:.4f}")
+                break
+
+            prev_loss = loss
+
+class Ridge(LinearRegressionModel):
+    def __init__(self, learning_rate: float = 0.1, epochs: int = 1000, print_rate: int = 1000, alpha: float = 1.0):
+        super().__init__(learning_rate, epochs, print_rate)
+        self.alpha = alpha
+
+    def fit(self, X: np.ndarray, y: np.ndarray, tol: float = 1e-8):
+        if not isinstance(X, np.ndarray):
+            X = np.asarray(X)
+
+        if not isinstance(y, np.ndarray):
+            y = np.asarray(y)
+
+        self.b = 0.0
+
+        # Reshape the inputs matrix as column matrix
+        if X.ndim == 1:
+            X = X.reshape(-1, 1)
+
+        y = y.flatten()
+
+        m, n = X.shape  # m row n columns: m samples, n features
+        self.w = np.zeros(n, dtype=float)
+        prev_loss = None
+
+        # Training loop
+        for epoch in range(self.epochs):
+            # Matrix multiplication (m,n) @ (n,1) -> (m,1)
+            y_preds = np.dot(X, self.w) + self.b
+
+            # Calculating loss using mse function
+            loss = calculate_mse(y, y_preds) +  (self.alpha * np.sum(self.w ** 2))
+            self.loss_history.append(loss)
+
+            # Adjusting parameters
+
+            # Calculating gradients
+            dw_mse = (-2.0 / m) * np.dot(X.T, (y - y_preds))
+            dw_r1 = self.alpha * 2 * self.w
+            dw = dw_r1 + dw_mse
+            db = (-2.0 / m) * np.sum((y - y_preds))
+
+            # Gradient Descent
+            self.w -= self.lr * dw
+            self.b -= self.lr * db
+
+            # Print the current state
+            if (epoch + 1) % self.print_rate == 0:
+                print(f"Epoch [{epoch + 1}/{self.epochs}], Loss: {loss:.4f}")
+
+            # Early stopping for better performance
+            if prev_loss is not None and abs(prev_loss - loss) < tol:
+                print(f"Converged at epoch {epoch + 1}, Loss: {loss:.4f}")
+                break
+
+            prev_loss = loss
