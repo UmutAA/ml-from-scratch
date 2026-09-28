@@ -1,7 +1,7 @@
 import numpy as np
 import pytest
 
-from models.linear_regression import LinearRegressionModel
+from models.linear_regression import LinearRegressionModel, Ridge, Lasso
 
 class TestLinearRegressionModel:
     def test_learns_correct_slope_and_intercept(self, perfect_linear_data):
@@ -53,3 +53,15 @@ class TestLinearRegressionModel:
         assert model.w[0] == pytest.approx(2.0, abs=0.1)
         assert model.w[1] == pytest.approx(-1.0, abs=0.1)
         assert model.b == pytest.approx(4.0, abs=0.1)
+
+def _ols(X, y):
+    m = LinearRegressionModel(learning_rate=0.1, epochs=5000, print_rate=10**9)
+    m.fit(X, y, tol=1e-14)
+    return m
+
+#TODO: Implement test cases for new models
+class TestLasso:
+    pass
+
+class TestRidge:
+    pass

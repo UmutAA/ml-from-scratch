@@ -9,7 +9,6 @@ def separable_data():
     y = (X.flatten() > 0).astype(int)
     return X, y
 
-
 @pytest.fixture
 def multiclass_separable_data():
     np.random.seed(42)
@@ -24,7 +23,6 @@ def multiclass_separable_data():
 
     shuffle_idx = np.random.permutation(X.shape[0])
     return X[shuffle_idx], y[shuffle_idx]
-
 
 @pytest.fixture
 def multiclass_string_labels_data():
